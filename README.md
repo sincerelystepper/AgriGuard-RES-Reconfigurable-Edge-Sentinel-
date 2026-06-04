@@ -7,7 +7,7 @@
 
 ![Platform](https://img.shields.io/badge/Platform-STM32H743IIT6-0078D4?style=for-the-badge&logo=stmicroelectronics&logoColor=white)
 ![FPGA](https://img.shields.io/badge/FPGA-Lattice_iCE40HX8K-6A0DAD?style=for-the-badge)
-![RF](https://img.shields.io/badge/RF-SX1262_LoRa_Sub--GHz-00897B?style=for-the-badge)
+![RF](https://img.shields.io/badge/RF-SX1262--868MHz_LoRa_Sub--GHz-00897B?style=for-the-badge)
 ![Power](https://img.shields.io/badge/Deep_Sleep-<50_µA-F4A400?style=for-the-badge)
 ![PCB](https://img.shields.io/badge/PCB-6--Layer_Impedance_Controlled-C0392B?style=for-the-badge)
 
