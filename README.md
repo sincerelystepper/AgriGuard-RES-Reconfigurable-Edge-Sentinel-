@@ -64,14 +64,14 @@ The core innovation of this platform is the hardware co-design of an **STM32H743
   │  (System Orchestration  │
   │   & Power-Gating Logic) │
   └──────────┬──────────────┘
-             │  UART / SPI
+             │  SPI
              ▼
   ┌─────────────────────────┐
   │   SEMTECH SX1262 LoRa   │
   │  (50-Ω Sub-GHz          │
   │   Mesh Transmission)    │
   └──────────┬──────────────┘
-             │  RF out → SMA
+             │  RF out → u.fl to SMA
              ▼
 ```
 
