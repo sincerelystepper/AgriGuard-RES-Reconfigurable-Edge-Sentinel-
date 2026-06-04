@@ -1,83 +1,171 @@
-# Agrionics Co. Edge Node: Multi-Voltage Solar Energy Harvesting Platform
+<div align="center">
 
-##  Project Overview
-The **AG-HARV-H7** is an industrial-grade, ultra-low-power, 6-layer edge computing platform designed for long-term agricultural telemetry deployment. Engineered to solve the challenge of executing zero-overhead edge compute in power-starved remote fields, this board combines a high-performance **STM32H743** microchip with a parallel processing **Lattice iCE40HX FPGA** co-processor and a long-range sub-GHz **Semtech SX1262 LoRa** transceiver.
+# AgriGuard-RES
+### Reconfigurable Edge Sentinel for Infrastructure-Independent Agricultural Intelligence
 
-The entire node is sustained natively via micro-power solar harvesting, featuring dual failover backup reservoirs and highly advanced power-gating logic designed to protect and optimize every nano-joule of stored environmental energy.
+<br>
 
----
+![Platform](https://img.shields.io/badge/Platform-STM32H743IIT6-0078D4?style=for-the-badge&logo=stmicroelectronics&logoColor=white)
+![FPGA](https://img.shields.io/badge/FPGA-Lattice_iCE40HX8K-6A0DAD?style=for-the-badge)
+![RF](https://img.shields.io/badge/RF-SX1262_LoRa_Sub--GHz-00897B?style=for-the-badge)
+![Power](https://img.shields.io/badge/Deep_Sleep-<50_µA-F4A400?style=for-the-badge)
+![PCB](https://img.shields.io/badge/PCB-6--Layer_Impedance_Controlled-C0392B?style=for-the-badge)
 
-##  1. System Power Tree & Low-Power Sleep Architecture
+<br>
 
-To maintain an unyielding 24/7 field presence on minimal solar exposure, the platform splits its power tracking domains into specialized, highly efficient regulation layers:
+*Developed by the engineering division at **Agrionics Systems** for next-generation agricultural edge autonomy.*
 
-###  The Harvester Core (ADP5090)
-* **Maximum Power Point Tracking (MPPT):** Regulated dynamically at an optimized **70% ratio** using high-impedance divider loops (`R23 = 6.34MΩ`, `R24 = 14.7MΩ`) to eliminate resistor-network leakage current.
-* **Charge Termination Threshold (`TERM`):** Set safely to **5.0V** to fully charge the primary high-capacity supercapacitor reservoir.
-* **Failover Backup Network:** Incorporates a dual CR2032 coin-cell pack running in series (6.0V nominal). Protected inline via a low-drop **1N4148 Schottky diode**, safely stepping down the backup entry line to **5.3V** to respect the harvester's maximum silicon limitations.
-
-###  Always-On 3.3V Sleep Rail (LMZM23600V3)
-* **Quiescent Target:** Sips a mere **28 µA** under zero-load standby states.
-* **Configuration:** Pin 4 (`EN`) is tied directly to `VIN_MAIN`, while Pin 2 (`MODE/SYNC`) is bound to Ground to enforce ultra-efficient **Auto PFM (Pulse Frequency Modulation)** burst switching during deep sleep states. 
-* **Target Load:** Powering the STM32H7's persistent internal memory registers and wake-up timers during low-power deep shutdown.
-
-###  Active 3.3V Main Rail (TPS563300)
-* **Undervoltage Lockout (UVLO):** Equipped with a rigid resistor supervisor network (`R1 = 590 kΩ`, `R2 = 169 kΩ`) targeting a crisp **5.0V power-on startup threshold** and a hard **4.0V safety shutdown barrier** to prevent brownout firmware corruption loops.
-* **Target Load:** Powers all peripheral sensors, external microphones, line transceivers, and FPGA I/O banks when the system enters active compute mode.
-
-###  Active 1.2V FPGA Core Rail (TPS62932)
-* **Formula Execution:** Utilizing the chip's native internal **0.8V reference** and an optimized E96 1% divider ratio (`R_fbt = 5.1 kΩ`, `R_fbb = 10.2 kΩ`), dropping power smoothly down to a mathematically perfect **1.200V** core rail.
-* **Switching Profile:** Pin 1 (`RT`) is tied straight to Ground, forcing a highly compact **1.2 MHz switching loop** paired with a specialized **2.2 µH low-profile inductor** to eliminate control loop ripples.
-* **Target Load:** Powers the high-speed internal look-up tables (LUTs) and routing fabric of the Lattice FPGA.
+</div>
 
 ---
 
-##  2. Dual-Chip Co-Processing Matrix
+## Overview
 
-The board isolates software execution from intensive, real-time sensor polling by leveraging a hardware parallel co-processing pipeline:
+Across Sub-Saharan Africa, over 500 million people depend on smallholder agriculture for survival. In Lesotho, where more than 70% of the population relies on subsistence farming, the convergence of climate variability, invasive pests such as the fall armyworm, and progressive soil degradation threatens food security at a structural level. Annual crop losses range from 20% to 40% — losses that are preventable given the right information at the right time.
 
-* **The Host Manager (STM32H743IIT6):** Coordinates global system status, schedules low-power sleep states, structures the LoRa radio telemetry payloads, and drives communication interfaces.
-* **The Hardware Accelerator (Lattice iCE40HX8K-TQ144):** Operates on a strict split-rail voltage architecture (1.2V Core Logic / 3.3V I/O Banks). The FPGA acts as an always-on parallel engine, directly interfacing with high-speed environmental sensors and a digital microphone array. It executes real-time hardware-level DSP filtering and data formatting over the edge before waking up the host MCU, saving maximum system power.
-* **Non-Volatile Memory (Winbond W25Q128JVS):** A high-capacity **128 Mb (16 MB) Serial NOR Flash** chip operating on the 3.3V bus. It stores the FPGA’s volatile SRAM boot bitstream, while providing extensive, non-volatile leftover sectors for localized agricultural sensor data logging.
+Existing precision agriculture platforms fail in this environment because they are engineered for reliable internet and stable grid power. In Lesotho's highlands, where mountain ridges isolate farms and cellular signal is absent for the majority of the day, cloud-dependent IoT architectures are nonfunctional.
 
----
-
-##  3. 50-Ω Sub-GHz LoRa RF Design & 6-Layer Layout
-
-To eliminate signal degradation and ensure long-range radio propagation through heavy crop canopies, the RF front-end architecture is routed to strict high-frequency standards:
-
-
-| Layer ID | Functional Domain | Copper Allocation Profile |
-| :--- | :--- | :--- |
-| **Layer 1 (Top)** | High-Speed Signal | RF Transmission Line, Power Components, Component Pads |
-| **Layer 2 (Int 1)** | Shield Plane | **Solid, Unbroken Ground Plane (GND)** |
-| **Layer 3 (Int 2)** | Slow Signal | Microcontroller Breakout, Dense Control Busses |
-| **Layer 4 (Int 3)** | Power Domain | Split Copper Rails (`+3V3`, `+1V2`, Always-On Buses) |
-| **Layer 5 (Int 4)** | Aux Plane | Secondary Solid Reference Ground Plane (GND) |
-| **Layer 6 (Bottom)**| Low-Speed Signal| External Sensor Traces, Local Decoupling Routing Channels |
-
-###  Key RF/High-Frequency Constraints:
-1. **The Straight-Line Mandate:** The antenna path runs on a perfectly straight horizontal axis from the Semtech SX1262 output, through the passive Pi-network filter, directly across the flipped RF Switch pins, into the U.FL connector. Bends, kinks, and signal vias are completely eliminated from the RF line.
-2. **The Faraday Cage Shield Wall:** The top-layer coplanar ground pour tracking the RF trace is stitched into Layer 2 GND using multiple shielding vias spaced tightly at **1.5 mm to 2.0 mm increments**, trapping radio emissions and protecting internal digital buses.
-3. **USB 2.0 Differential Routing:** The `USB_D_P` and `USB_D_N` debug data lines are locked side-by-side as a uniform parallel track (**0.15mm trace width / 0.15mm separation gap**) over an unbroken Layer 2 GND mirror to enforce a rigid 90-Ω differential impedance profile.
+**AgriGuard-RES** resolves this architectural limitation by shifting AI inference to the exact source where data originates — in the field, on-device, and in real time.
 
 ---
 
-##  4. Initial Hardware Bring-Up & Safety Validation Steps
+## Table of Contents
 
-When your completed board arrives from the manufacturing facility, execute these validation diagnostics **before** plugging in any programming tools or power components:
-
-### Phase A: Unpowered Shorts Inspection (Multimeter Check)
-Set your digital multimeter to **Continuity/Resistance Mode** and verify that no direct manufacturing copper shorts exist across your major rails:
-1. Measure between `+3V3` and `GND`. Ensure resistance climbs safely into the Kilo-Ohm range as the decoupling capacitors charge.
-2. Measure between `+1V2` and `GND`. Ensure the core logic loops are isolated.
-3. Verify that the center tap of the high-speed crystal load capacitors (`C50`/`C51`) maintains solid, uncompromised continuity directly to the system Ground plane.
-
-### Phase B: Controlled Power Testing (LDO & Buck Diagnostics)
-1. Hook your lab bench power supply to the solar terminal block `J3`, setting a strict current limit of **50 mA** and a voltage input of **5.0V**.
-2. Measure the output pad of the **LMZM23600V3 sleep module** to ensure a rock-solid **3.30V** always-on rail is generated.
-3. Verify that the **TPS62932 regulator output** sits precisely within the FPGA's mandatory core logic window (**1.14V to 1.26V**).
-4. Connect a PC via a standard USB-C cable into debug port `J7`. Ensure the Configuration Channel pins (`CC1`/`CC2`) register a clean drop down across their independent **5.1 kΩ resistors**, forcing the host machine to deliver a standard 5V VBUS rail to the sensing pin `PA9`.
+1. [System Topology & Hardware Acceleration Architecture](#1-system-topology--hardware-acceleration-architecture)
+2. [Sub-GHz Mesh Networking & 6-Layer RF Layout](#2-sub-ghz-mesh-networking--6-layer-rf-layout)
+3. [Ultra-Low-Power Solar Harvesting & Power Tree](#3-ultra-low-power-solar-harvesting--power-tree)
+4. [Hardware Bring-Up & Quality Verification Procedures](#4-hardware-bring-up--quality-verification-procedures)
 
 ---
-*Developed and maintained by the engineering division at **Agrionics Co.** for next-generation agricultural edge autonomy.*
+
+## 1. System Topology & Hardware Acceleration Architecture
+
+The core innovation of this platform is the hardware co-design of an **STM32H743IIT6** host microcontroller alongside a **Lattice iCE40HX8K FPGA**, implemented on a high-density, impedance-controlled **6-layer PCB substrate**.
+
+```
+                        [ HARDWARE ACCELERATION PIPELINE ]
+
+  ┌─────────────────────────┐
+  │   Lattice iCE40HX FPGA  │
+  │  (Zero-Latency Parallel │
+  │   Inference Accelerator)│
+  └────────────┬────────────┘
+               │
+               │  High-Speed SPI Bus
+               ▼
+  ┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
+  │  ENVIRONMENTAL SENSORS │ ───> │  STM32H743 HOST MASTER  │ ───> │   SEMTECH SX1262 LoRa   │
+  │  (Acoustic, Spectral,  │      │ (System Orchestration & │      │ (50-Ω Sub-GHz Long Range│
+  │   Soil RS-485 Modbus)  │      │   Power-Gating Logic)   │      │    Mesh Transmission)   │
+  └────────────────────────┘      └─────────────────────────┘      └─────────────────────────┘
+```
+
+The 480 MHz ARM Cortex-M7 handles global system orchestration and communication stacks. The Lattice FPGA operates as a **dedicated parallel hardware accelerator** on a split-rail architecture (1.2V Core Logic / 3.3V I/O), executing FFT-based feature extraction and lightweight modulation classification on raw sensor streams with sub-100 ms latency — a computational envelope that software-driven embedded processors cannot match at this micro-power scale.
+
+### Multi-Seasonal Dynamic Reconfigurability
+
+The FPGA is fully field-reconfigurable. Multiple AI bitstreams are stored non-volatilely on an onboard **128 Mb Winbond W25Q128JVS Serial NOR Flash** chip. The host MCU reloads bitstreams on-demand via the dedicated SPI configuration path, switching the sentinel's operational profile across agricultural seasons without a single hardware modification.
+
+| Pipeline | Sensor Modality | Function |
+|---|---|---|
+| **Acoustic Pest Pipeline** | Digital MEMS Microphone | FPGA-accelerated hardware FFT; isolates insect chewing frequency signatures before infestations become visible |
+| **Spectral Crop Pipeline** | Multi-channel NIR Sensor | Fuses NIR telemetry to compute vegetation indices; detects crop water-stress and cellular decay before leaf symptoms manifest |
+| **Soil Intelligence Pipeline** | RS485 Modbus Probe + BME680 | Interfaces with five-parameter soil probes and microclimate sensors; compiles localised fertility and irrigation profiles |
+
+---
+
+## 2. Sub-GHz Mesh Networking & 6-Layer RF Layout
+
+To bypass mountain topography barriers, AgriGuard-RES transmits **only actionable edge decisions** — not raw sensor data — over a sub-GHz **Semtech SX1262 LoRa mesh network**. The 433 MHz band was selected specifically for its superior diffraction and knife-edge bending characteristics across rugged highland terrain, achieving **5 to 15 kilometres per hop**.
+
+To guarantee that high-speed digital transitions from the FPGA configuration bus do not desensitise the radio receiver front-end, the physical board uses a **6-layer impedance-controlled stack-up**.
+
+### PCB Layer Stack-Up
+
+| Layer | Functional Domain | Copper Profile |
+|---|---|---|
+| **Layer 1 — Top** | High-Speed RF / Signal | Straight 50-Ω Coplanar Waveguide, TX Switch, Matching Networks |
+| **Layer 2 — Int 1** | Shield Plane | Solid, unbroken ground return path (GND) |
+| **Layer 3 — Int 2** | Inner Signal | MCU breakout, dense SPI configuration buses |
+| **Layer 4 — Int 3** | Power Domain | Split copper rails: `+3V3`, `+1V2` FPGA core, always-on lines |
+| **Layer 5 — Int 4** | Auxiliary Plane | Secondary solid reference ground plane (GND) |
+| **Layer 6 — Bottom** | Low-Speed Signal | Sensor tracking, FPGA backside decoupling capacitor networks |
+
+### RF Layout Constraints
+
+**Straight-Line RF Mandate**
+The antenna trace travels in a perfectly straight, horizontal line on Layer 1 from the SX1262 output, through the passive Pi-network filter, across the RF switch pins, into the U.FL antenna port. Vias, corners, and trace bends are strictly prohibited on the RF line to prevent impedance discontinuities.
+
+**Faraday Shield Wall**
+The top-layer coplanar ground plane running parallel to the RF trace is stitched directly into the Layer 2 ground plane via shielding vias spaced at **1.5 mm to 2.0 mm** increments, forming a continuous electromagnetic barrier that traps radio emissions and prevents coupling into adjacent signal layers.
+
+**USB 2.0 Differential Pair**
+The `USB_D+` and `USB_D−` debug lines are routed as a uniform parallel track (`0.15 mm width / 0.15 mm gap`) over the solid Layer 2 GND mirror, enforcing a rigid **90-Ω differential impedance** profile.
+
+---
+
+## 3. Ultra-Low-Power Solar Harvesting & Power Tree
+
+Perpetual, unattended field operation through harsh highland winters and extended overcast periods requires an ultra-low-power standby configuration targeting **under 50 µA in deep sleep**.
+
+### Subsystem Breakdown
+
+**Harvester Core — ADP5090**
+
+Dynamically tracks maximum power via an optimised **70% MPPT ratio** using a multi-mega-ohm network (`R23 = 6.34 MΩ`, `R24 = 14.7 MΩ`) to eliminate passive divider leakage current. Charge termination (`TERM`) is locked at **5.0 V** to saturate the primary supercapacitor reservoir.
+
+**Dual-Priority Backup Rail**
+
+A dual CR2032 coin-cell pack in series (6.0 V nominal), protected inline via a low-drop 1N4148 Schottky diode, steps the backup entry line down to **5.3 V** to respect the harvester's maximum silicon input limit.
+
+**Always-On Sleep Rail — LMZM23600V3**
+
+Draws a mere **28 µA** under zero-load conditions. Pin 4 (`EN`) is tied to `VIN_MAIN`; Pin 2 (`MODE/SYNC`) is grounded to enforce **Auto PFM burst-switching mode**, maintaining the persistent STM32 memory domains during deep standby.
+
+**Active 3.3 V Main Rail — TPS563300**
+
+Supervised by a rigid resistor network (`R1 = 590 kΩ`, `R2 = 169 kΩ`) targeting a **5.0 V startup threshold** and a **4.0 V safety shutdown barrier**, preventing brownout crashes. Power-gates the peripheral sensors, transceiver, and FPGA I/O banks.
+
+**Active 1.2 V FPGA Core Rail — TPS62932**
+
+Uses the chip's native internal **0.8 V reference** with an optimised E96 1% divider (`R_fbt = 5.1 kΩ`, `R_fbb = 10.2 kΩ`), producing a mathematically exact **1.200 V** core rail. Pin 1 (`RT`) is grounded, forcing a compact **1.2 MHz switching loop** paired with a **2.2 µH low-profile inductor** to suppress control-loop ripple.
+
+### Power Rail Summary
+
+| Rail | Regulator | Target Output | Condition |
+|---|---|---|---|
+| Always-On Sleep | LMZM23600V3 | 3.30 V | 28 µA quiescent; Auto PFM |
+| Active Main | TPS563300 | 3.30 V | Startup at 5.0 V; shutdown at 4.0 V |
+| FPGA Core | TPS62932 | 1.200 V | 1.2 MHz switching; `RT` = GND |
+| Backup Entry | CR2032 × 2 + 1N4148 | ~5.3 V | Series pair; Schottky-clamped |
+
+---
+
+## 4. Hardware Bring-Up & Quality Verification Procedures
+
+Execute these diagnostic procedures on unpopulated or newly assembled hardware **before** connecting any active power source or debug probe.
+
+### Phase A — Isolation Checks (Continuity Diagnostic)
+
+Set a digital multimeter to **Continuity / Resistance Mode** and verify power rail isolation across the 6-layer plane splits.
+
+1. Measure between `+3V3` and `GND`. Confirm the resistance climbs into the kilo-ohm range as the 0603 decoupling arrays charge.
+2. Measure between `+1V2` and `GND`. Verify the internal FPGA core logic plane is completely isolated.
+3. Confirm that the centre grounding pad tap of the high-speed clock crystal load capacitors (`C50` / `C51`) maintains direct, low-impedance continuity to the primary system ground layer.
+
+### Phase B — Power-Up Verification (Voltage & Signal Loop Diagnostics)
+
+1. Apply **5.0 V** from a current-limited bench supply (**50 mA ceiling**) to the solar terminal block `J3`.
+2. Confirm the **LMZM23600V3** outputs a clean, stable **3.30 V** always-on rail to the MCU standby domains.
+3. Verify the **TPS62932** output sits within the FPGA core operating tolerance window — **1.14 V to 1.26 V**.
+4. Connect a PC via USB-C to debug port `J7`. Confirm that the Configuration Channel pins (`CC1` / `CC2`) register a clean voltage drop across their independent **5.1 kΩ resistors**, signalling the host machine to deliver a standard 5 V VBUS rail to sensing pin `PA9`.
+
+---
+
+<div align="center">
+
+**Agrionics Systems** — Engineering Division
+
+*Precision at the edge. Intelligence in the field.*
+
+</div>
