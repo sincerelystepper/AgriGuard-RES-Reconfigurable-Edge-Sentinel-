@@ -1,0 +1,7 @@
+# Ignore the automatic microcontroller driver folders from the statistics bar
+Firmware_MCU/Drivers/**/* linguist-vendored
+Firmware_MCU/Middlewares/**/* linguist-vendored
+
+# Explicitly identify your hardware acceleration modules
+*.v linguist-language=SystemVerilog
+*.sv linguist-language=SystemVerilog
