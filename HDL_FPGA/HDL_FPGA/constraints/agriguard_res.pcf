@@ -1,0 +1,54 @@
+# AgriGuard-RES Physical Constraints File
+# Target: Lattice iCE40HX8K-TQ144
+# Agrionics Systems Co. | PCB Rev 1.0
+#
+# Pin assignments must be cross-verified against KiCad PCB layout.
+# Pins marked [VERIFY] require confirmation against schematic net names.
+# All IOs operate at 3.3V LVCMOS — matches TPS563300 active rail output.
+#
+# iCE40HX8K-TQ144 dedicated clock inputs (GBIN):
+#   GBIN0 = pin R9,  GBIN1 = pin T9
+#   GBIN2 = pin R15, GBIN3 = pin T15
+#   GBIN4 = pin R16, GBIN5 = pin T16
+#   GBIN6 = pin P7,  GBIN7 = pin R7
+# Use GBIN pins for high-fanout clocks only.
+
+# ── SYSTEM CLOCK ─────────────────────────────────────────────────────────────
+# 12 MHz crystal oscillator → GBIN6 (dedicated clock input, lowest skew)
+set_io  clk_12mhz       P7
+
+# ── RESET ────────────────────────────────────────────────────────────────────
+# Driven by STM32 PB7 (ICE40_CRESET) — active LOW
+# During user mode this pin is released HIGH (internal pull-up on iCE40)
+set_io  rst_n           R16   # [VERIFY against schematic]
+
+# ── PDM MICROPHONE INTERFACE ─────────────────────────────────────────────────
+# pdm_clk_out: 3 MHz clock output to MEMS microphone CLK pin
+# pdm_data:    1-bit PDM data input from microphone DATA pin
+set_io  pdm_clk_out     B1    # [VERIFY]
+set_io  pdm_data        B2    # [VERIFY]
+
+# ── SPI SLAVE (STM32 SPI2 → iCE40) ──────────────────────────────────────────
+# Matches STM32H743 SPI2 pin mapping on the PCB
+# SCK:  STM32 PB13 → iCE40
+# MOSI: STM32 PB15 → iCE40
+# MISO: iCE40      → STM32 PB14
+# CSN:  STM32 PB9  → iCE40
+set_io  spi_sck         R11   # [VERIFY]
+set_io  spi_mosi        T10   # [VERIFY]
+set_io  spi_miso        P11   # [VERIFY]
+set_io  spi_csn         R10   # [VERIFY]
+
+# ── FPGA IRQ OUTPUT (iCE40 → STM32 PC13) ─────────────────────────────────────
+# Active HIGH pulse — drives STM32 EXTI13 rising edge interrupt
+set_io  fpga_irq        T7    # [VERIFY]
+
+# ── IO STANDARD ───────────────────────────────────────────────────────────────
+# All IOs use default LVCMOS33 on iCE40 (3.3V bank voltage)
+# No explicit set_io -io_std needed for nextpnr — LVCMOS33 is default
+# For iCEcube2 / Synplify: add IO_TYPE=LVCMOS33 to each set_io line
+
+# ── TIMING CONSTRAINTS ────────────────────────────────────────────────────────
+# nextpnr frequency target: 12 MHz (very relaxed for iCE40HX8K)
+# SPI SCK max: 10 MHz — synchronizer in spi_slave handles metastability
+# set_frequency clk_12mhz 12  ← add this to nextpnr --freq argument instead
