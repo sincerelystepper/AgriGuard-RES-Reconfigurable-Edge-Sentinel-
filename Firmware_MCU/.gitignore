@@ -1,0 +1,14 @@
+# Ignore compilation outputs
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+
+# Ignore IDE local settings
+.settings/
+
