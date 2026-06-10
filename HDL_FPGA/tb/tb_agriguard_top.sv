@@ -81,7 +81,8 @@ module tb_agriguard_top;
     real  pdm_accum;
     real  pdm_sample;
 
-    always_ff @(posedge clk_12mhz) begin
+    // Plain always (not always_ff) — real-type variables cannot use always_ff
+    always @(posedge clk_12mhz) begin
         pdm_clk_prev <= pdm_clk_out;
 
         if (pdm_clk_out && !pdm_clk_prev) begin
@@ -90,12 +91,12 @@ module tb_agriguard_top;
             if (pdm_phase > TWO_PI) pdm_phase = pdm_phase - TWO_PI;
 
             // Sigma-delta: accumulate sine + 0.5 offset
-            pdm_sample = 0.5 + 0.45 * $sin(pdm_phase);  // 0.05..0.95 range
+            pdm_sample = 0.5 + 0.45 * $sin(pdm_phase);
             pdm_accum  = pdm_accum + pdm_sample;
 
             if (pdm_accum >= 1.0) begin
                 pdm_data  <= 1'b1;
-                pdm_accum = pdm_accum - 1.0;
+                pdm_accum  = pdm_accum - 1.0;
             end else begin
                 pdm_data  <= 1'b0;
             end

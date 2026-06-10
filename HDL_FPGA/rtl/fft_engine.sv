@@ -293,10 +293,12 @@ module fft_stage #(
             end else begin
                 sample_cnt <= sample_cnt + 1'b1;
             end
-            // butterfly_sel: high for second half of each DELAY-pair
-            butterfly_sel <= sample_cnt[($clog2(DELAY))];
-            // Twiddle address: lower bits of sample counter, scaled
-            twiddle_addr <= sample_cnt[$clog2(DELAY)-1:0] << STAGE;
+            // butterfly_sel: bit at position log2(DELAY) of sample_cnt
+            // Mask approach avoids variable part-select elaboration issue
+            butterfly_sel <= (sample_cnt >> $clog2(DELAY)) & 1'b1;
+            // Twiddle address: lower log2(DELAY) bits, scaled by stage
+            // Use mask instead of part-select to avoid out-of-order when DELAY=1
+            twiddle_addr <= (sample_cnt & ((1 << $clog2(DELAY)) - 1)) << STAGE;
         end
     end
 
