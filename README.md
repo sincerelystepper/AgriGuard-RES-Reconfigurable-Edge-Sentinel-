@@ -81,10 +81,16 @@ The 480 MHz ARM Cortex-M7 handles global system orchestration and communication 
 
 The digital twin of the AgriGuard-RES hardware acceleration pipeline has been fully verified via behavioral simulation using `iverilog` and mapped using GTKWave. The simulation tests the end-to-end processing pipeline under a continuous 8kHz PDM microphone stream containing target acoustic insect frequency signatures.
 
-###  Real-Time Behavioral Transitions
-* **System Startup State:** `![0s State](HDL_FPGA/simulation_images/0s.gif)`
-* **Decimator Stabilization:** `![0.4ms State](HDL_FPGA/simulation_images/0.4ms.gif)`
-* **FAW Anomaly Latch Event:** `![21ms State](HDL_FPGA/simulation_images/21ms.gif)`
+### Real-Time Behavioral Transitions
+
+* **System Startup State:**  
+  ![0s State](HDL_FPGA/simulation_images/0s.gif)
+
+* **Decimator Stabilization:**  
+  ![0.4ms State](HDL_FPGA/simulation_images/0.4ms.gif)
+
+* **FAW Anomaly Latch Event:**  
+  ![21ms State](HDL_FPGA/simulation_images/21ms.gif)
 
 
 ###  Timeline & Signal Handshake Sequence
