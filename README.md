@@ -40,6 +40,8 @@ Existing precision agriculture platforms fail in this environment because they a
 
 ## 1. System Topology & Hardware Acceleration Architecture
 
+![AgriGuard-RES 3D Front Assembly Render](Hardware/images/pcb%20front%203d%20render%20v4.gif)
+
 The core innovation of this platform is the hardware co-design of an **STM32H743IIT6** host microcontroller alongside a **Lattice iCE40HX8K FPGA**, implemented on a high-density, impedance-controlled **6-layer PCB substrate**.
 
 ```
