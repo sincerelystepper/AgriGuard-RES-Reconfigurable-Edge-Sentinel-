@@ -1,34 +1,37 @@
-# ==============================================================================
-# GITHUB LINGUIST CONFIGURATION
-# Objective: Suppress vendor/generated C code to highlight SystemVerilog (RTL)
-# ==============================================================================
+# =============================================================================
+# GitHub Linguist Configuration - AgriGuard-RES
+# Goal: Make SystemVerilog dominant + suppress vendor firmware noise
+# =============================================================================
 
-# --- 1. Specific Folder Suppressions (Fixed Paths) ---
-Firmware_MCU/AgriGuard_RES/Drivers/** linguist-vendored=true
-Firmware_MCU/AgriGuard_RES/Middlewares/** linguist-vendored=true
+# --- Force SystemVerilog recognition ---
+*.sv  linguist-language=SystemVerilog
+*.svh linguist-language=SystemVerilog
 
-# --- 2. Global Catch-Alls (Bulletproof backup for HAL/CMSIS files) ---
-**/Drivers/CMSIS/** linguist-vendored=true
-**/Drivers/STM32H7xx_HAL_Driver/** linguist-vendored=true
-**/*_hal_* linguist-vendored=true
-**/stm32h7xx_it.c linguist-vendored=true
-**/system_stm32h7xx.c linguist-vendored=true
+# --- Strongly suppress vendor / generated C code ---
+**/Drivers/**                    linguist-vendored=true
+**/Middlewares/**                linguist-vendored=true
+**/Core/**                       linguist-vendored=true
+**/Debug/**                      linguist-generated=true
+**/Release/**                    linguist-generated=true
+**/build/**                      linguist-generated=true
 
-# --- 3. IDE Config & Build Artifacts Suppression ---
-Firmware_MCU/AgriGuard_RES/Debug/** linguist-generated=true
-Firmware_MCU/AgriGuard_RES/Release/** linguist-generated=true
-Firmware_MCU/AgriGuard_RES/build/** linguist-generated=true
-*.cproject linguist-generated=true
-*.project linguist-generated=true
+# Specific STM32 noise
+**/*_hal_*                       linguist-vendored=true
+**/stm32h7xx_*                   linguist-vendored=true
+**/system_stm32h7xx.c            linguist-vendored=true
+**/stm32h7xx_it.c                linguist-vendored=true
+
+# IDE / STM32CubeIDE artifacts
+*.ioc      linguist-generated=true
 *.mxproject linguist-generated=true
-*.ioc linguist-generated=true
-*.ld linguist-generated=true
+*.cproject linguist-generated=true
+*.project  linguist-generated=true
+*.ld       linguist-generated=true
 
-# --- 4. Documentation & Non-Code Suppression ---
-*.pdf linguist-documentation=true
-*.log linguist-documentation=true
+# Documentation
+*.pdf      linguist-documentation=true
+*.md       linguist-documentation=false
+README.md  linguist-documentation=false
 
-# --- 5. Force SystemVerilog Prominence ---
-*.sv linguist-language=SystemVerilog
-*.sv linguist-detectable=true
-*.sv linguist-documentation=false
+# FPGA / HDL priority
+HDL_FPGA/**  linguist-language=SystemVerilog
