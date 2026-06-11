@@ -1,4 +1,4 @@
-# Tell Linguist the HAL is vendor/generated code — don't count it
+# --- Existing Rules ---
 Firmware_MCU/Drivers/** linguist-vendored=true
 Firmware_MCU/Middlewares/** linguist-vendored=true
 Firmware_MCU/**/*_hal_*.c linguist-vendored=true
@@ -8,3 +8,18 @@ Firmware_MCU/**/*_hal_*.h linguist-vendored=true
 *.sv linguist-language=SystemVerilog
 *.sv linguist-detectable=true
 *.sv linguist-documentation=false
+
+# --- New Rules to Reduce C/Other Language Weight ---
+
+# If you have build artifacts, binaries, or hex files generated in the firmware folder
+Firmware_MCU/build/** linguist-generated=true
+Firmware_MCU/Debug/** linguist-generated=true
+Firmware_MCU/Release/** linguist-generated=true
+
+# Exclude documentation, logs, or other non-code files
+*.pdf linguist-documentation=true
+*.log linguist-documentation=true
+*.md linguist-documentation=true
+
+# If you have other specific third-party libraries/SDKs not yet covered
+Firmware_MCU/ThirdParty/** linguist-vendored=true
