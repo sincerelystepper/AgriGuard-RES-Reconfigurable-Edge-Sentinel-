@@ -1,3 +1,4 @@
+cat > /home/claude/agrionics/README_updated.md << 'ENDREADME'
 <div align="center">
 
 # AgriGuard-RES
@@ -7,9 +8,10 @@
 
 ![Platform](https://img.shields.io/badge/Platform-STM32H743IIT6-0078D4?style=for-the-badge&logo=stmicroelectronics&logoColor=white)
 ![FPGA](https://img.shields.io/badge/FPGA-Lattice_iCE40HX8K-6A0DAD?style=for-the-badge)
-![RF](https://img.shields.io/badge/RF-SX1262--868MHz_LoRa_Sub--GHz-00897B?style=for-the-badge)
+![RF](https://img.shields.io/badge/RF-SX1262--433MHz_LoRa_Mesh-00897B?style=for-the-badge)
 ![Power](https://img.shields.io/badge/Deep_Sleep-<50_µA-F4A400?style=for-the-badge)
 ![PCB](https://img.shields.io/badge/PCB-6--Layer_Impedance_Controlled-C0392B?style=for-the-badge)
+![Simulation](https://img.shields.io/badge/HDL_Simulation-iverilog_|_GTKWave-2E7D32?style=for-the-badge)
 
 <br>
 
@@ -79,31 +81,109 @@ The core innovation of this platform is the hardware co-design of an **STM32H743
 
 The 480 MHz ARM Cortex-M7 handles global system orchestration and communication stacks. The Lattice FPGA operates as a **dedicated parallel hardware accelerator** on a split-rail architecture (1.2V Core Logic / 3.3V I/O), executing FFT-based feature extraction and lightweight modulation classification on raw sensor streams with sub-100 ms latency — a computational envelope that software-driven embedded processors cannot match at this micro-power scale.
 
-##  Functional & Behavioral Verification
+---
 
-The digital twin of the AgriGuard-RES hardware acceleration pipeline has been fully verified via behavioral simulation using `iverilog` and mapped using GTKWave. The simulation tests the end-to-end processing pipeline under a continuous 8kHz PDM microphone stream containing target acoustic insect frequency signatures.
+## Functional & Behavioral Verification
+
+The digital twin of the AgriGuard-RES hardware acceleration pipeline has been fully verified via behavioral simulation using `iverilog` and mapped using GTKWave. The simulation tests the end-to-end processing pipeline under a continuous 8 kHz PDM microphone stream containing target acoustic insect frequency signatures.
 
 ### Real-Time Behavioral Transitions
 
-* **System Startup State:**  
+The waveforms below are captured directly from the GTKWave VCD output of `tb_agriguard_top.sv`, running all four SystemVerilog cores in a single integrated simulation.
+
+- **System Startup State:**
   ![0s State](HDL_FPGA/simulation_images/0s.gif)
 
-* **Decimator Stabilization:**  
+- **Decimator Stabilization:**
   ![0.4ms State](HDL_FPGA/simulation_images/0.4ms.gif)
 
-* **FAW Anomaly Latch Event:**  
+- **FAW Anomaly Latch Event:**
   ![21ms State](HDL_FPGA/simulation_images/21ms.gif)
 
+### Timeline & Signal Handshake Sequence
 
-###  Timeline & Signal Handshake Sequence
 The waveform snapshot captures the critical real-time execution window at the **21.33 ms** mark, validating the cross-chip orchestration:
 
-1. **DSP Front-End Execution:** Continuous clock division on `pdm_clk_out` feeds the MEMS microphone lines, processing noisy sigma-delta modulated `pdm_data` into the 5-stage Cascaded Integrator-Comb (CIC) decimator.
-2. **FFT Accumulation:** The core `fft_engine` accumulates 4 sequential spectral frames, running raw bin magnitude calculations to isolate the target Fall Armyworm (FAW) frequency envelope.
-3. **Host MCU Interrupt:** At $\sim$21.31 ms, the hardware detection threshold is crossed, triggering a firm rising edge on the physical `fpga_irq` pin to instantly wake up the STM32 host controller.
-4. **SPI Register Extraction:** Following the interrupt assertion, the host MCU pulls `spi_csn` low and drives the `spi_sck` line to interrogate the FPGA register bank. 
-5. **Telemetry Output:** The data bus (`spi_rx[7:0]`) outputs `0x01` on the status register read path, cleanly passing the verified anomaly notification over to the host processor for long-range LoRa mesh propagation.
+1. **DSP Front-End Execution:** Continuous clock division on `pdm_clk_out` feeds the MEMS microphone lines, processing noisy sigma-delta modulated `pdm_data` into the 3-stage Cascaded Integrator-Comb (CIC) decimator at a 64:1 decimation ratio (PDM 3 MHz → PCM 48 kHz).
+2. **FFT Accumulation:** The core `fft_engine` accumulates 4 sequential spectral frames through an 8-stage Single-path Delay Feedback (SDF) Radix-2 pipeline, running raw bin magnitude calculations to isolate the target Fall Armyworm (FAW) frequency envelope (bins 27–64, corresponding to 5–12 kHz).
+3. **Host MCU Interrupt:** At ≈21.31 ms, the hardware detection threshold is crossed, triggering a firm rising edge on the physical `fpga_irq` pin to instantly wake up the STM32 host controller via EXTI13.
+4. **SPI Register Extraction:** Following the interrupt assertion, the host MCU pulls `spi_csn` low and drives the `spi_sck` line to interrogate the FPGA register bank.
+5. **Telemetry Output:** The data bus (`spi_rx[7:0]`) outputs `0x01` on the ANOMALY register read path, cleanly passing the verified anomaly notification over to the host processor for long-range LoRa mesh propagation.
 
+### Simulation Terminal Results
+
+The following output was captured from a direct `iverilog` + `vvp` execution of the full simulation suite. Terminal output represents logical pass/fail verification — complementing the waveform captures above which show signal-level behavioral correctness.
+
+**PDM Decimator Unit Test** (`tb_pdm_decimator.sv`):
+```
+[PDM-TB] Applying reset...
+[PDM-TB] Reset released
+[PDM-TB] TEST 2: DC full-scale input (all 1s)
+[PDM-TB]   Last PCM = 0x8000 (-32768)
+[PDM-TB] TEST 3: Silence input (alternating 10101...)
+[PDM-TB]   Last PCM = 0x0000 (0)
+[PDM-TB] TEST 4: 8 kHz sigma-delta sine (48 PCM samples)
+[PDM-TB]   PCM[1] = 1151 (0x047f)
+[PDM-TB]   PCM[2] = 13405 (0x345d)
+[PDM-TB]   PCM[3] = 25463 (0x6377)
+[PDM-TB]   PCM[4] = 12688 (0x3190)
+[PDM-TB]   PCM[5] = -13423 (0xcb91)
+[PDM-TB]   PCM[6] = -25428 (0x9cac)
+[PDM-TB] Total valid PCM samples seen: 48
+[PDM-TB] PDM decimator test complete
+```
+
+**SPI Slave Controller Unit Test** (`tb_spi_slave.sv`) — 8/8 pass:
+```
+[SPI-TB] TEST 1: STATUS read, faw_detected=0
+[SPI-TB] ✓  STATUS_REG: got 0x00
+
+[SPI-TB] TEST 2: STATUS read, faw_detected=1
+[SPI-TB] ✓  STATUS_REG bit0: got 0x01
+
+[SPI-TB] TEST 3: faw_pulse fires → fpga_irq latches HIGH
+[SPI-TB] ✓  fpga_irq HIGH after faw_pulse: got 1
+
+[SPI-TB] TEST 4: ANOMALY_REG read after faw_pulse
+[SPI-TB] ✓  ANOMALY_REG: got 0x01
+
+[SPI-TB] TEST 5: Write CLEAR_IRQ → fpga_irq goes LOW
+[SPI-TB] ✓  fpga_irq LOW after clear: got 0
+
+[SPI-TB] TEST 6: ANOMALY_REG reads 0x00 after clear
+[SPI-TB] ✓  ANOMALY_REG after clear: got 0x00
+
+[SPI-TB] TEST 7: Threshold write 0xA1=0xCD, 0xA2=0xAB
+[SPI-TB] ✓  threshold_out HI: got 0xab
+[SPI-TB] ✓  threshold_out LO: got 0xcd
+
+[SPI-TB] Results: 8 passed, 0 failed
+```
+
+**Full System Integration Test** (`tb_agriguard_top.sv`) — PDM → FFT → SPI → IRQ end-to-end:
+```
+[TB] T=0          | Applying reset
+[TB] T=1625000    | Reset released
+[TB] T=1625000    | Running 4 FFT frames with 8kHz PDM input...
+[TB] T=21335129000| fpga_irq = 1 (expect 1 if FAW detected)
+[TB] ✓ FAW anomaly detected — IRQ asserted
+[TB] T=21339329000| STATUS_REG  = 0x01  (bit0=1 = faw_detected)
+[TB] T=21343529000| ANOMALY_REG = 0x01  (expect 0x01 = FAW)
+[TB] ✓ ANOMALY_REG correctly reports FAW
+[TB] T=21348546000| After IRQ clear: fpga_irq = 0 (expect 0)
+[TB] ✓ IRQ cleared successfully
+[TB] ══════════════════════════════════════
+[TB] AgriGuard-RES HDL simulation complete
+[TB] ══════════════════════════════════════
+```
+
+> **Reproduce locally:**
+> ```bash
+> # Requires OSS CAD Suite (Yosys + nextpnr-ice40 + iverilog + GTKWave)
+> cd HDL_FPGA
+> make sim        # compile + run full system testbench
+> make wave       # open waveforms in GTKWave
+> ```
 
 ### Multi-Seasonal Dynamic Reconfigurability
 
@@ -119,7 +199,7 @@ The FPGA is fully field-reconfigurable. Multiple AI bitstreams are stored non-vo
 
 ## 2. Sub-GHz Mesh Networking & 6-Layer RF Layout
 
-To bypass mountain topography barriers, AgriGuard-RES transmits **only actionable edge decisions** — not raw sensor data — over a sub-GHz **Semtech SX1262 LoRa mesh network**. The 868 MHz band was selected specifically for its superior diffraction and knife-edge bending characteristics across rugged highland terrain, achieving **5 to 15 kilometres per hop**.
+To bypass mountain topography barriers, AgriGuard-RES transmits **only actionable edge decisions** — not raw sensor data — over a sub-GHz **Semtech SX1262 LoRa mesh network**. The **433 MHz band** was selected for its superior ground-wave propagation and knife-edge diffraction characteristics across rugged highland terrain — lower frequency means longer wavelength, directly translating to enhanced penetration through vegetation density gradients and around rocky ridgelines in Lesotho's Maluti Mountain range, achieving **5 to 15 kilometres per hop**.
 
 To guarantee that high-speed digital transitions from the FPGA configuration bus do not desensitise the radio receiver front-end, the physical board uses a **6-layer impedance-controlled stack-up**.
 
@@ -212,3 +292,5 @@ Set a digital multimeter to **Continuity / Resistance Mode** and verify power ra
 *Precision at the edge. Intelligence in the field.*
 
 </div>
+ENDREADME
+echo "README written — $(wc -l < /home/claude/agrionics/README_updated.md) lines"
