@@ -77,6 +77,22 @@ The core innovation of this platform is the hardware co-design of an **STM32H743
 
 The 480 MHz ARM Cortex-M7 handles global system orchestration and communication stacks. The Lattice FPGA operates as a **dedicated parallel hardware accelerator** on a split-rail architecture (1.2V Core Logic / 3.3V I/O), executing FFT-based feature extraction and lightweight modulation classification on raw sensor streams with sub-100 ms latency — a computational envelope that software-driven embedded processors cannot match at this micro-power scale.
 
+##  Functional & Behavioral Verification
+
+The digital twin of the AgriGuard-RES hardware acceleration pipeline has been fully verified via behavioral simulation using `iverilog` and mapped using GTKWave. The simulation tests the end-to-end processing pipeline under a continuous 8kHz PDM microphone stream containing target acoustic insect frequency signatures.
+
+![AgriGuard-RES HDL Simulation Waveform](HDL_FPGA/simulation_images/hdl_wave_verification.png)
+
+###  Timeline & Signal Handshake Sequence
+The waveform snapshot captures the critical real-time execution window at the **21.33 ms** mark, validating the cross-chip orchestration:
+
+1. **DSP Front-End Execution:** Continuous clock division on `pdm_clk_out` feeds the MEMS microphone lines, processing noisy sigma-delta modulated `pdm_data` into the 5-stage Cascaded Integrator-Comb (CIC) decimator.
+2. **FFT Accumulation:** The core `fft_engine` accumulates 4 sequential spectral frames, running raw bin magnitude calculations to isolate the target Fall Armyworm (FAW) frequency envelope.
+3. **Host MCU Interrupt:** At $\sim$21.31 ms, the hardware detection threshold is crossed, triggering a firm rising edge on the physical `fpga_irq` pin to instantly wake up the STM32 host controller.
+4. **SPI Register Extraction:** Following the interrupt assertion, the host MCU pulls `spi_csn` low and drives the `spi_sck` line to interrogate the FPGA register bank. 
+5. **Telemetry Output:** The data bus (`spi_rx[7:0]`) outputs `0x01` on the status register read path, cleanly passing the verified anomaly notification over to the host processor for long-range LoRa mesh propagation.
+
+
 ### Multi-Seasonal Dynamic Reconfigurability
 
 The FPGA is fully field-reconfigurable. Multiple AI bitstreams are stored non-volatilely on an onboard **128 Mb Winbond W25Q128JVS Serial NOR Flash** chip. The host MCU reloads bitstreams on-demand via the dedicated SPI configuration path, switching the sentinel's operational profile across agricultural seasons without a single hardware modification.
