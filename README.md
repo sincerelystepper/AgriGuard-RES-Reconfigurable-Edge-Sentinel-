@@ -1,4 +1,3 @@
-cat > /home/claude/agrionics/README_updated.md << 'ENDREADME'
 <div align="center">
 
 # AgriGuard-RES
@@ -292,5 +291,4 @@ Set a digital multimeter to **Continuity / Resistance Mode** and verify power ra
 *Precision at the edge. Intelligence in the field.*
 
 </div>
-ENDREADME
-echo "README written — $(wc -l < /home/claude/agrionics/README_updated.md) lines"
+
