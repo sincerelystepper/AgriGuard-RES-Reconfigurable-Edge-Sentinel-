@@ -1,0 +1,10 @@
+# Tell Linguist the HAL is vendor/generated code — don't count it
+Firmware_MCU/Drivers/** linguist-vendored=true
+Firmware_MCU/Middlewares/** linguist-vendored=true
+Firmware_MCU/**/*_hal_*.c linguist-vendored=true
+Firmware_MCU/**/*_hal_*.h linguist-vendored=true
+
+# Force SystemVerilog detection
+*.sv linguist-language=SystemVerilog
+*.sv linguist-detectable=true
+*.sv linguist-documentation=false
