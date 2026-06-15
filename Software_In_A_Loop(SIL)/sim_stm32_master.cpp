@@ -33,12 +33,14 @@ double sc_time_stamp() { return 0.0; }
  *
  * Build (from HDL_FPGA/ directory, in OSS CAD Suite or MSYS2 shell):
  *
+ *  # build on OSS CAD Suite - vs code terminal
  *   verilator --sv --cc rtl/pdm_decimator.sv rtl/fft_engine.sv \
  *             rtl/spi_slave.sv rtl/agriguard_top.sv \
  *             --top-module agriguard_top --trace --Mdir obj_dir \
  *             -Wno-fatal -Wno-WIDTHTRUNC -Wno-WIDTHEXPAND \
  *             -Wno-UNUSED -Wno-UNDRIVEN -Wno-VARHIDDEN
  *
+ *   # buildin on MSYS2 SHELL
  *   g++ -std=c++17 -O2 \
  *       -I. -Iobj_dir \
  *       -I$(VERILATOR_ROOT)/include \
