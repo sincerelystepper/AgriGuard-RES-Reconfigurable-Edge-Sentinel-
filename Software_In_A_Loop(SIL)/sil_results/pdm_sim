@@ -1,0 +1,492 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2009.vpi";
+S_0x557d8b45b8b0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0x557d8b45ad70 .scope module, "tb_pdm_decimator" "tb_pdm_decimator" 3 21;
+ .timescale -9 -12;
+P_0x557d8b461e20 .param/real "AUDIO_FREQ" 1 3 48, Cr<m7d00000000000000gfce>; value=8000.00
+P_0x557d8b461e60 .param/real "PDM_CLK_HZ" 1 3 49, Cr<m5b8d800000000000gfd7>; value=3.00000e+06
+P_0x557d8b461ea0 .param/real "PDM_CLK_NS" 1 3 40, Cr<m53554fdf3b645c00gfca>; value=333.333
+P_0x557d8b461ee0 .param/real "TWO_PI" 1 3 50, Cr<m6487ed51045d1000gfc4>; value=6.28319
+v0x557d8b4a4740_0 .var "clk", 0 0;
+v0x557d8b4a4800_0 .var/i "pcm_count", 31 0;
+v0x557d8b4a48c0_0 .net "pcm_out", 15 0, v0x557d8b4a4190_0;  1 drivers
+v0x557d8b4a49c0_0 .net "pcm_valid", 0 0, v0x557d8b4a4270_0;  1 drivers
+v0x557d8b4a4a90_0 .var "pdm_data", 0 0;
+v0x557d8b4a4b30_0 .var "rst_n", 0 0;
+v0x557d8b4a4c00_0 .var/real "sd_accum", 0 0;
+v0x557d8b4a4ca0_0 .var/real "sd_input", 0 0;
+v0x557d8b4a4d40_0 .var/real "sd_phase", 0 0;
+v0x557d8b4a4de0_0 .var/i "valid_count", 31 0;
+E_0x557d8b46e6c0 .event posedge, v0x557d8b4a3a30_0;
+S_0x557d8b45c1b0 .scope module, "u_dut" "pdm_decimator" 3 31, 4 32 0, S_0x557d8b45ad70;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "rst_n";
+    .port_info 2 /INPUT 1 "pdm_data";
+    .port_info 3 /OUTPUT 16 "pcm_out";
+    .port_info 4 /OUTPUT 1 "pcm_valid";
+P_0x557d8b461f30 .param/l "CIC_ORDER" 1 4 49, C4<00000000000000000000000000000011>;
+P_0x557d8b461f70 .param/l "CIC_WIDTH" 1 4 50, C4<00000000000000000000000000010011>;
+P_0x557d8b461fb0 .param/l "DECIM_CNT_W" 1 4 51, C4<00000000000000000000000000000110>;
+P_0x557d8b461ff0 .param/l "DECIM_RATIO" 1 4 48, C4<00000000000000000000000001000000>;
+L_0x557d8b45c3b0 .functor BUFZ 19, L_0x557d8b4a5070, C4<0000000000000000000>, C4<0000000000000000000>, C4<0000000000000000000>;
+L_0x7ff85ca9d018 .functor BUFT 1, C4<0000000000000000001>, C4<0>, C4<0>, C4<0>;
+v0x557d8b45f700_0 .net/2u *"_ivl_0", 18 0, L_0x7ff85ca9d018;  1 drivers
+L_0x7ff85ca9d0f0 .functor BUFT 1, C4<00000000000000000000000000111111>, C4<0>, C4<0>, C4<0>;
+v0x557d8b460e50_0 .net/2u *"_ivl_10", 31 0, L_0x7ff85ca9d0f0;  1 drivers
+L_0x7ff85ca9d060 .functor BUFT 1, C4<1111111111111111111>, C4<0>, C4<0>, C4<0>;
+v0x557d8b460ef0_0 .net/2u *"_ivl_2", 18 0, L_0x7ff85ca9d060;  1 drivers
+v0x557d8b4a3660_0 .net *"_ivl_6", 31 0, L_0x557d8b4b5390;  1 drivers
+L_0x7ff85ca9d0a8 .functor BUFT 1, C4<00000000000000000000000000>, C4<0>, C4<0>, C4<0>;
+v0x557d8b4a3740_0 .net *"_ivl_9", 25 0, L_0x7ff85ca9d0a8;  1 drivers
+v0x557d8b4a3870_0 .net/s "cic_result", 18 0, L_0x557d8b45c3b0;  1 drivers
+v0x557d8b4a3950_0 .net/s "cic_truncated", 15 0, L_0x557d8b4b5810;  1 drivers
+v0x557d8b4a3a30_0 .net "clk", 0 0, v0x557d8b4a4740_0;  1 drivers
+v0x557d8b4a3af0 .array/s "comb_dly", 2 0, 18 0;
+v0x557d8b4a4050_2 .array/port v0x557d8b4a4050, 2;
+v0x557d8b4a3c30 .array "comb_in", 2 0;
+v0x557d8b4a3c30_0 .net/s v0x557d8b4a3c30 0, 18 0, v0x557d8b4a4050_2; 1 drivers
+v0x557d8b4a3c30_1 .net/s v0x557d8b4a3c30 1, 18 0, L_0x557d8b47e540; 1 drivers
+v0x557d8b4a3c30_2 .net/s v0x557d8b4a3c30 2, 18 0, L_0x557d8b47f190; 1 drivers
+v0x557d8b4a3d70 .array "comb_out", 2 0;
+v0x557d8b4a3d70_0 .net/s v0x557d8b4a3d70 0, 18 0, L_0x557d8b4b5650; 1 drivers
+v0x557d8b4a3d70_1 .net/s v0x557d8b4a3d70 1, 18 0, L_0x557d8b4a4f20; 1 drivers
+v0x557d8b4a3d70_2 .net/s v0x557d8b4a3d70 2, 18 0, L_0x557d8b4a5070; 1 drivers
+v0x557d8b4a3eb0_0 .var "decim_cnt", 5 0;
+v0x557d8b4a3f90_0 .net "decim_strobe", 0 0, L_0x557d8b4b54e0;  1 drivers
+v0x557d8b4a4050 .array/s "integ", 2 0, 18 0;
+v0x557d8b4a4190_0 .var "pcm_out", 15 0;
+v0x557d8b4a4270_0 .var "pcm_valid", 0 0;
+v0x557d8b4a4330_0 .net "pdm_data", 0 0, v0x557d8b4a4a90_0;  1 drivers
+v0x557d8b4a4500_0 .net/s "pdm_signed", 18 0, L_0x557d8b4b51d0;  1 drivers
+v0x557d8b4a45e0_0 .net "rst_n", 0 0, v0x557d8b4a4b30_0;  1 drivers
+E_0x557d8b46df80/0 .event negedge, v0x557d8b4a45e0_0;
+E_0x557d8b46df80/1 .event posedge, v0x557d8b4a3a30_0;
+E_0x557d8b46df80 .event/or E_0x557d8b46df80/0, E_0x557d8b46df80/1;
+L_0x557d8b4b51d0 .functor MUXZ 19, L_0x7ff85ca9d060, L_0x7ff85ca9d018, v0x557d8b4a4a90_0, C4<>;
+L_0x557d8b4b5390 .concat [ 6 26 0 0], v0x557d8b4a3eb0_0, L_0x7ff85ca9d0a8;
+L_0x557d8b4b54e0 .cmp/eq 32, L_0x557d8b4b5390, L_0x7ff85ca9d0f0;
+v0x557d8b4a3af0_0 .array/port v0x557d8b4a3af0, 0;
+L_0x557d8b4b5650 .arith/sub 19, v0x557d8b4a4050_2, v0x557d8b4a3af0_0;
+L_0x557d8b4b5810 .part L_0x557d8b45c3b0, 3, 16;
+S_0x557d8b458f60 .scope begin, "$ivl_for_loop0" "$ivl_for_loop0" 4 66, 4 66 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+v0x557d8b480420_0 .var/2s "i", 31 0;
+S_0x557d8b4a2900 .scope begin, "$ivl_for_loop1" "$ivl_for_loop1" 4 71, 4 71 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+v0x557d8b45e920_0 .var/2s "i", 31 0;
+S_0x557d8b4a2b40 .scope begin, "$ivl_for_loop2" "$ivl_for_loop2" 4 108, 4 108 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+v0x557d8b45e9c0_0 .var/2s "i", 31 0;
+S_0x557d8b4a2d90 .scope begin, "$ivl_for_loop3" "$ivl_for_loop3" 4 114, 4 114 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+v0x557d8b45f630_0 .var/2s "i", 31 0;
+S_0x557d8b4a2fd0 .scope generate, "g_comb[1]" "g_comb[1]" 4 126, 4 126 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+P_0x557d8b4a3220 .param/l "gi" 1 4 126, +C4<01>;
+L_0x557d8b47e540 .functor BUFZ 19, L_0x557d8b4b5650, C4<0000000000000000000>, C4<0000000000000000000>, C4<0000000000000000000>;
+v0x557d8b4a3af0_1 .array/port v0x557d8b4a3af0, 1;
+L_0x557d8b4a4f20 .arith/sub 19, L_0x557d8b47e540, v0x557d8b4a3af0_1;
+S_0x557d8b4a3300 .scope generate, "g_comb[2]" "g_comb[2]" 4 126, 4 126 0, S_0x557d8b45c1b0;
+ .timescale -9 -12;
+P_0x557d8b4a34e0 .param/l "gi" 1 4 126, +C4<010>;
+L_0x557d8b47f190 .functor BUFZ 19, L_0x557d8b4a4f20, C4<0000000000000000000>, C4<0000000000000000000>, C4<0000000000000000000>;
+v0x557d8b4a3af0_2 .array/port v0x557d8b4a3af0, 2;
+L_0x557d8b4a5070 .arith/sub 19, L_0x557d8b47f190, v0x557d8b4a3af0_2;
+    .scope S_0x557d8b45c1b0;
+T_0 ;
+    %wait E_0x557d8b46df80;
+    %load/vec4 v0x557d8b4a45e0_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.0, 8;
+    %fork t_1, S_0x557d8b458f60;
+    %jmp t_0;
+    .scope S_0x557d8b458f60;
+t_1 ;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0x557d8b480420_0, 0, 32;
+T_0.2 ;
+    %load/vec4 v0x557d8b480420_0;
+    %cmpi/u 3, 0, 32;
+    %jmp/0xz T_0.3, 5;
+    %pushi/vec4 0, 0, 19;
+    %ix/getv/s 3, v0x557d8b480420_0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a4050, 0, 4;
+    ; show_stmt_assign_vector: Get l-value for compressed += operand
+    %load/vec4 v0x557d8b480420_0;
+    %pushi/vec4 1, 0, 32;
+    %add;
+    %cast2;
+    %store/vec4 v0x557d8b480420_0, 0, 32;
+    %jmp T_0.2;
+T_0.3 ;
+    %end;
+    .scope S_0x557d8b45c1b0;
+t_0 %join;
+    %jmp T_0.1;
+T_0.0 ;
+    %ix/load 4, 0, 0;
+    %flag_set/imm 4, 0;
+    %load/vec4a v0x557d8b4a4050, 4;
+    %load/vec4 v0x557d8b4a4500_0;
+    %add;
+    %ix/load 3, 0, 0;
+    %flag_set/imm 4, 0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a4050, 0, 4;
+    %fork t_3, S_0x557d8b4a2900;
+    %jmp t_2;
+    .scope S_0x557d8b4a2900;
+t_3 ;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x557d8b45e920_0, 0, 32;
+T_0.4 ;
+    %load/vec4 v0x557d8b45e920_0;
+    %cmpi/u 3, 0, 32;
+    %jmp/0xz T_0.5, 5;
+    %ix/getv/s 4, v0x557d8b45e920_0;
+    %load/vec4a v0x557d8b4a4050, 4;
+    %load/vec4 v0x557d8b45e920_0;
+    %subi 1, 0, 32;
+    %ix/vec4/s 4;
+    %load/vec4a v0x557d8b4a4050, 4;
+    %add;
+    %ix/getv/s 3, v0x557d8b45e920_0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a4050, 0, 4;
+    ; show_stmt_assign_vector: Get l-value for compressed += operand
+    %load/vec4 v0x557d8b45e920_0;
+    %pushi/vec4 1, 0, 32;
+    %add;
+    %cast2;
+    %store/vec4 v0x557d8b45e920_0, 0, 32;
+    %jmp T_0.4;
+T_0.5 ;
+    %end;
+    .scope S_0x557d8b45c1b0;
+t_2 %join;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_0x557d8b45c1b0;
+T_1 ;
+    %wait E_0x557d8b46df80;
+    %load/vec4 v0x557d8b4a45e0_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_1.0, 8;
+    %pushi/vec4 0, 0, 6;
+    %assign/vec4 v0x557d8b4a3eb0_0, 0;
+    %jmp T_1.1;
+T_1.0 ;
+    %load/vec4 v0x557d8b4a3eb0_0;
+    %pad/u 32;
+    %cmpi/e 63, 0, 32;
+    %jmp/0xz  T_1.2, 4;
+    %pushi/vec4 0, 0, 6;
+    %assign/vec4 v0x557d8b4a3eb0_0, 0;
+    %jmp T_1.3;
+T_1.2 ;
+    %load/vec4 v0x557d8b4a3eb0_0;
+    %addi 1, 0, 6;
+    %assign/vec4 v0x557d8b4a3eb0_0, 0;
+T_1.3 ;
+T_1.1 ;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_0x557d8b45c1b0;
+T_2 ;
+    %wait E_0x557d8b46df80;
+    %load/vec4 v0x557d8b4a45e0_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_2.0, 8;
+    %fork t_5, S_0x557d8b4a2b40;
+    %jmp t_4;
+    .scope S_0x557d8b4a2b40;
+t_5 ;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0x557d8b45e9c0_0, 0, 32;
+T_2.2 ;
+    %load/vec4 v0x557d8b45e9c0_0;
+    %cmpi/u 3, 0, 32;
+    %jmp/0xz T_2.3, 5;
+    %pushi/vec4 0, 0, 19;
+    %ix/getv/s 3, v0x557d8b45e9c0_0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a3af0, 0, 4;
+    ; show_stmt_assign_vector: Get l-value for compressed += operand
+    %load/vec4 v0x557d8b45e9c0_0;
+    %pushi/vec4 1, 0, 32;
+    %add;
+    %cast2;
+    %store/vec4 v0x557d8b45e9c0_0, 0, 32;
+    %jmp T_2.2;
+T_2.3 ;
+    %end;
+    .scope S_0x557d8b45c1b0;
+t_4 %join;
+    %jmp T_2.1;
+T_2.0 ;
+    %load/vec4 v0x557d8b4a3f90_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_2.4, 8;
+    %ix/load 4, 2, 0;
+    %flag_set/imm 4, 0;
+    %load/vec4a v0x557d8b4a4050, 4;
+    %ix/load 3, 0, 0;
+    %flag_set/imm 4, 0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a3af0, 0, 4;
+    %fork t_7, S_0x557d8b4a2d90;
+    %jmp t_6;
+    .scope S_0x557d8b4a2d90;
+t_7 ;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x557d8b45f630_0, 0, 32;
+T_2.6 ;
+    %load/vec4 v0x557d8b45f630_0;
+    %cmpi/u 3, 0, 32;
+    %jmp/0xz T_2.7, 5;
+    %load/vec4 v0x557d8b45f630_0;
+    %subi 1, 0, 32;
+    %ix/vec4/s 4;
+    %load/vec4a v0x557d8b4a3d70, 4;
+    %ix/getv/s 3, v0x557d8b45f630_0;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x557d8b4a3af0, 0, 4;
+    ; show_stmt_assign_vector: Get l-value for compressed += operand
+    %load/vec4 v0x557d8b45f630_0;
+    %pushi/vec4 1, 0, 32;
+    %add;
+    %cast2;
+    %store/vec4 v0x557d8b45f630_0, 0, 32;
+    %jmp T_2.6;
+T_2.7 ;
+    %end;
+    .scope S_0x557d8b45c1b0;
+t_6 %join;
+T_2.4 ;
+T_2.1 ;
+    %jmp T_2;
+    .thread T_2;
+    .scope S_0x557d8b45c1b0;
+T_3 ;
+    %wait E_0x557d8b46df80;
+    %load/vec4 v0x557d8b4a45e0_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_3.0, 8;
+    %pushi/vec4 0, 0, 16;
+    %assign/vec4 v0x557d8b4a4190_0, 0;
+    %pushi/vec4 0, 0, 1;
+    %assign/vec4 v0x557d8b4a4270_0, 0;
+    %jmp T_3.1;
+T_3.0 ;
+    %load/vec4 v0x557d8b4a3f90_0;
+    %assign/vec4 v0x557d8b4a4270_0, 0;
+    %load/vec4 v0x557d8b4a3f90_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_3.2, 8;
+    %load/vec4 v0x557d8b4a3950_0;
+    %assign/vec4 v0x557d8b4a4190_0, 0;
+T_3.2 ;
+T_3.1 ;
+    %jmp T_3;
+    .thread T_3;
+    .scope S_0x557d8b45ad70;
+T_4 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x557d8b4a4740_0, 0, 1;
+    %end;
+    .thread T_4;
+    .scope S_0x557d8b45ad70;
+T_5 ;
+    %delay 166667, 0;
+    %load/vec4 v0x557d8b4a4740_0;
+    %inv;
+    %store/vec4 v0x557d8b4a4740_0, 0, 1;
+    %jmp T_5;
+    .thread T_5;
+    .scope S_0x557d8b45ad70;
+T_6 ;
+    %vpi_call/w 3 57 "$dumpfile", "sim/pdm_decimator.vcd" {0 0 0};
+    %vpi_call/w 3 58 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x557d8b45ad70 {0 0 0};
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x557d8b4a4b30_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x557d8b4a4a90_0, 0, 1;
+    %pushi/real 0, 4065; load=0.00000
+    %store/real v0x557d8b4a4c00_0;
+    %pushi/real 0, 4065; load=0.00000
+    %store/real v0x557d8b4a4d40_0;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0x557d8b4a4800_0, 0, 32;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0x557d8b4a4de0_0, 0, 32;
+    %vpi_call/w 3 69 "$display", "[PDM-TB] Applying reset..." {0 0 0};
+    %pushi/vec4 10, 0, 32;
+T_6.0 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_6.1, 5;
+    %jmp/1 T_6.1, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x557d8b46e6c0;
+    %jmp T_6.0;
+T_6.1 ;
+    %pop/vec4 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x557d8b4a4b30_0, 0, 1;
+    %vpi_call/w 3 72 "$display", "[PDM-TB] Reset released" {0 0 0};
+    %vpi_call/w 3 75 "$display", "[PDM-TB] TEST 2: DC full-scale input (all 1s)" {0 0 0};
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x557d8b4a4a90_0, 0, 1;
+    %pushi/vec4 640, 0, 32;
+T_6.2 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_6.3, 5;
+    %jmp/1 T_6.3, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x557d8b46e6c0;
+    %jmp T_6.2;
+T_6.3 ;
+    %pop/vec4 1;
+    %load/vec4 v0x557d8b4a48c0_0;
+    %vpi_call/w 3 78 "$display", "[PDM-TB]   Last PCM = 0x%04X (%0d)", v0x557d8b4a48c0_0, S<0,vec4,s16> {1 0 0};
+    %vpi_call/w 3 81 "$display", "[PDM-TB] TEST 3: Silence input (alternating 10101...)" {0 0 0};
+    %pushi/vec4 640, 0, 32;
+T_6.4 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_6.5, 5;
+    %jmp/1 T_6.5, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x557d8b46e6c0;
+    %load/vec4 v0x557d8b4a4a90_0;
+    %inv;
+    %store/vec4 v0x557d8b4a4a90_0, 0, 1;
+    %jmp T_6.4;
+T_6.5 ;
+    %pop/vec4 1;
+    %load/vec4 v0x557d8b4a48c0_0;
+    %vpi_call/w 3 83 "$display", "[PDM-TB]   Last PCM = 0x%04X (%0d)", v0x557d8b4a48c0_0, S<0,vec4,s16> {1 0 0};
+    %vpi_call/w 3 86 "$display", "[PDM-TB] TEST 4: 8 kHz sigma-delta sine (48 PCM samples)" {0 0 0};
+    %pushi/real 1073741824, 4065; load=0.500000
+    %store/real v0x557d8b4a4c00_0;
+    %pushi/real 0, 4065; load=0.00000
+    %store/real v0x557d8b4a4d40_0;
+    %pushi/vec4 3072, 0, 32;
+T_6.6 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_6.7, 5;
+    %jmp/1 T_6.7, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x557d8b46e6c0;
+    %load/real v0x557d8b4a4d40_0;
+    %pushi/real 1151405884, 4060; load=0.0167552
+    %pushi/real 361980, 4038; load=0.0167552
+    %add/wr;
+    %add/wr;
+    %store/real v0x557d8b4a4d40_0;
+    %pushi/real 1686629713, 4068; load=6.28319
+    %pushi/real 71492, 4046; load=6.28319
+    %add/wr;
+    %load/real v0x557d8b4a4d40_0;
+    %cmp/wr;
+    %jmp/0xz  T_6.8, 5;
+    %load/real v0x557d8b4a4d40_0;
+    %pushi/real 1686629713, 4068; load=6.28319
+    %pushi/real 71492, 4046; load=6.28319
+    %add/wr;
+    %sub/wr;
+    %store/real v0x557d8b4a4d40_0;
+T_6.8 ;
+    %pushi/real 1073741824, 4065; load=0.500000
+    %pushi/real 1932735283, 4064; load=0.450000
+    %pushi/real 838861, 4042; load=0.450000
+    %add/wr;
+    %vpi_func/r 3 94 "$sin", v0x557d8b4a4d40_0 {0 0 0};
+    %mul/wr;
+    %add/wr;
+    %store/real v0x557d8b4a4ca0_0;
+    %load/real v0x557d8b4a4c00_0;
+    %load/real v0x557d8b4a4ca0_0;
+    %add/wr;
+    %store/real v0x557d8b4a4c00_0;
+    %pushi/real 1073741824, 4066; load=1.00000
+    %load/real v0x557d8b4a4c00_0;
+    %cmp/wr;
+    %flag_or 5, 4;
+    %jmp/0xz  T_6.10, 5;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x557d8b4a4a90_0, 0, 1;
+    %load/real v0x557d8b4a4c00_0;
+    %pushi/real 1073741824, 4066; load=1.00000
+    %sub/wr;
+    %store/real v0x557d8b4a4c00_0;
+    %jmp T_6.11;
+T_6.10 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x557d8b4a4a90_0, 0, 1;
+T_6.11 ;
+    %load/vec4 v0x557d8b4a49c0_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_6.12, 8;
+    %load/vec4 v0x557d8b4a4de0_0;
+    %addi 1, 0, 32;
+    %store/vec4 v0x557d8b4a4de0_0, 0, 32;
+    %load/vec4 v0x557d8b4a4de0_0;
+    %cmpi/s 8, 0, 32;
+    %flag_or 5, 4;
+    %jmp/1 T_6.16, 5;
+    %flag_mov 8, 5;
+    %load/vec4 v0x557d8b4a4de0_0;
+    %cmpi/s 44, 0, 32;
+    %flag_inv 5; GE is !LT
+    %flag_or 5, 8;
+T_6.16;
+    %jmp/0xz  T_6.14, 5;
+    %load/vec4 v0x557d8b4a48c0_0;
+    %vpi_call/w 3 107 "$display", "[PDM-TB]   PCM[%0d] = %0d (0x%04X)", v0x557d8b4a4de0_0, S<0,vec4,s16>, v0x557d8b4a48c0_0 {1 0 0};
+T_6.14 ;
+T_6.12 ;
+    %jmp T_6.6;
+T_6.7 ;
+    %pop/vec4 1;
+    %vpi_call/w 3 113 "$display", "[PDM-TB] Total valid PCM samples seen: %0d", v0x557d8b4a4de0_0 {0 0 0};
+    %vpi_call/w 3 114 "$display", "[PDM-TB] PDM decimator test complete" {0 0 0};
+    %vpi_call/w 3 115 "$finish" {0 0 0};
+    %end;
+    .thread T_6;
+    .scope S_0x557d8b45ad70;
+T_7 ;
+    %delay 2755359744, 11;
+    %vpi_call/w 3 121 "$display", "[PDM-TB] TIMEOUT" {0 0 0};
+    %vpi_call/w 3 122 "$finish" {0 0 0};
+    %end;
+    .thread T_7;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "tb/tb_pdm_decimator.sv";
+    "rtl/pdm_decimator.sv";
