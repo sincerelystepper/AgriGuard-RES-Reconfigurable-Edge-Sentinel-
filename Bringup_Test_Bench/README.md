@@ -2,7 +2,7 @@
 
 A script-driven way to bring up and validate the AgriGuard-RES board without any firmware on the MCU. The host PC pokes the STM32H743's registers over SWD (through OpenOCD), which lets Python drive the MCU's GPIO pins directly and act as the bus master for the chips wired to them.
 
-> **Status:** early starter. The structure and the first two tests are in place; the pin map still has to be filled in from the KiCad schematic, and the script has not yet been run against a physical board. Update this section once it has.
+> **Status:** early starter. The structure and the first two tests are in place; the pin map still has to be filled in from the KiCad schematic, and the script has not yet been run against a physical board. Will be updated in stages of In-Circuit Testing .
 
 ## How it works
 
